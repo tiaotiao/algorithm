@@ -7,12 +7,24 @@ import (
 type BinarySearchTree struct {
 	root    *node
 	compare func(a interface{}, b interface{}) int
+
+	insert func(p **node, v interface{}) bool
+}
+
+type node struct {
+	value interface{}
+
+	left  *node
+	right *node
+
+	extra interface{} // for extend
 }
 
 func NewBinarySearchTree() *BinarySearchTree {
 	t := new(BinarySearchTree)
 	t.root = nil
 	t.compare = CompareInt
+	t.insert = t._insert
 	return t
 }
 
@@ -20,9 +32,9 @@ func (t *BinarySearchTree) Insert(v interface{}) bool {
 	return t.insert(&t.root, v)
 }
 
-func (t *BinarySearchTree) insert(p **node, v interface{}) bool {
+func (t *BinarySearchTree) _insert(p **node, v interface{}) bool {
 	if *p == nil {
-		*p = newNode(v)
+		*p = t.newNode(v)
 		return true
 	}
 
@@ -127,23 +139,16 @@ func (t *BinarySearchTree) toString(n *node) string {
 	return fmt.Sprintf("[%s] %v [%s]", l, n.value, r)
 }
 
-func CompareInt(a interface{}, b interface{}) int {
-	x := a.(int)
-	y := b.(int)
-	return x - y
-}
-
-type node struct {
-	value interface{}
-
-	left  *node
-	right *node
-}
-
-func newNode(v interface{}) *node {
+func (t *BinarySearchTree) newNode(v interface{}) *node {
 	n := new(node)
 	n.value = v
 	n.left = nil
 	n.right = nil
 	return n
+}
+
+func CompareInt(a interface{}, b interface{}) int {
+	x := a.(int)
+	y := b.(int)
+	return x - y
 }
