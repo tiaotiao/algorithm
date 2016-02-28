@@ -8,7 +8,9 @@ type BinarySearchTree struct {
 	root    *node
 	compare func(a interface{}, b interface{}) int
 
-	insert func(p **node, v interface{}) bool
+	insert  func(p **node, v interface{}) bool
+	delete  func(p **node, v interface{}) bool
+	del_min func(p **node) *node
 }
 
 type node struct {
@@ -25,6 +27,8 @@ func NewBinarySearchTree() *BinarySearchTree {
 	t.root = nil
 	t.compare = CompareInt
 	t.insert = t._insert
+	t.delete = t._delete
+	t.del_min = t._del_min
 	return t
 }
 
@@ -78,7 +82,7 @@ func (t *BinarySearchTree) Delete(v interface{}) bool {
 	return t.delete(&t.root, v)
 }
 
-func (t *BinarySearchTree) delete(p **node, v interface{}) bool {
+func (t *BinarySearchTree) _delete(p **node, v interface{}) bool {
 	n := *p
 	if n == nil {
 		return false
@@ -118,7 +122,7 @@ func (t *BinarySearchTree) del_node(p **node) *node {
 	return n
 }
 
-func (t *BinarySearchTree) del_min(p **node) *node {
+func (t *BinarySearchTree) _del_min(p **node) *node {
 	if (*p).left != nil {
 		return t.del_min(&(*p).left)
 	}

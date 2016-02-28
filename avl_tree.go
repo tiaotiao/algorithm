@@ -8,11 +8,9 @@ func NewAVLTree() *AVLTree {
 	t := new(AVLTree)
 	t.BinarySearchTree = NewBinarySearchTree()
 	t.insert = t._insert
+	t.delete = t._delete
+	t.del_min = t._del_min
 	return t
-}
-
-func (t *AVLTree) Insert(v interface{}) bool {
-	return t.insert(&t.root, v)
 }
 
 func (t *AVLTree) _insert(p **node, v interface{}) bool {
@@ -23,15 +21,35 @@ func (t *AVLTree) _insert(p **node, v interface{}) bool {
 
 	t.rebalance(p)
 
-	t.updateHeight(*p)
+	return true
+}
+
+func (t *AVLTree) _delete(p **node, v interface{}) bool {
+	ok := t.BinarySearchTree._delete(p, v)
+	if !ok {
+		return false
+	}
+
+	t.rebalance(p)
 
 	return true
+}
+
+func (t *AVLTree) _del_min(p **node) *node {
+	n := t.BinarySearchTree._del_min(p)
+
+	t.rebalance(p)
+
+	return n
 }
 
 func (t *AVLTree) rebalance(p **node) bool {
 	if *p == nil {
 		return false
 	}
+
+	defer t.updateHeight(*p)
+
 	leftHeight := t.height((*p).left)
 	rightHeight := t.height((*p).right)
 
