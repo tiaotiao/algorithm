@@ -96,34 +96,33 @@ func (t *BinarySearchTree) delete(p **node, v interface{}) bool {
 	}
 }
 
-func (t *BinarySearchTree) del_node(p **node) {
-	if *p == nil {
-		return
-	}
-	n := *p
-
-	q := t.min(&n.right) // find the minimum node from the right.
-
-	if q == nil { // if has no right subtree.
-		*p = n.left // use the left subtree as replacement.
-		return
-	} else { // use the minimun node from the right subtree as replacement.
-		(*p).value = (*q).value // replace
-		t.del_node(q)           // delete the replacement node from its original place.
-	}
-}
-
-func (t *BinarySearchTree) min(p **node) **node {
+func (t *BinarySearchTree) del_node(p **node) *node {
 	if *p == nil {
 		return nil
 	}
-	for {
-		if (*p).left != nil {
-			p = &((*p).left)
-		} else {
-			return p
-		}
+	n := *p
+	defer func() {
+		n.right, n.left = nil, nil
+	}()
+
+	if n.right == nil { // if has no right subtree.
+		*p = n.left // use the left subtree as replacement.
+		return n
 	}
+
+	// use the minimun node from the right subtree as replacement.
+	min := t.del_min(&(*p).right)
+	min.left = n.left
+	min.right = n.right
+	(*p) = min
+	return n
+}
+
+func (t *BinarySearchTree) del_min(p **node) *node {
+	if (*p).left != nil {
+		return t.del_min(&(*p).left)
+	}
+	return t.del_node(p)
 }
 
 func (t *BinarySearchTree) String() string {
