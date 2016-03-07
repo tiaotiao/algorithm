@@ -35,6 +35,23 @@ func New234Tree() *BTree {
 	return NewBTree(4)
 }
 
+func (t *BTree) Find(v interface{}) (interface{}, bool) {
+	return t.find(t.root, v)
+}
+
+func (t *BTree) find(n *bnode, v interface{}) (interface{}, bool) {
+	if n == nil {
+		return nil, false
+	}
+
+	pos, exist := t.searchNode(n, v)
+	if exist {
+		return n.elements[pos], true
+	}
+
+	return t.find(n.children[pos], v)
+}
+
 func (t *BTree) Insert(v interface{}) {
 	elem, child := t._insert(t.root, v)
 	if elem != nil {
@@ -51,14 +68,7 @@ func (t *BTree) _insert(n *bnode, v interface{}) (elem interface{}, child *bnode
 	}
 
 	// find proper a place for v
-	exist := false
-	pos := sort.Search(len(n.elements), func(i int) bool {
-		c := t.Compare(n.elements[i], v)
-		if c == 0 {
-			exist = true
-		}
-		return c >= 0
-	})
+	pos, exist := t.searchNode(n, v)
 
 	if exist { // the value is found in this node, replace it
 		n.elements[pos] = v
@@ -125,4 +135,16 @@ func (t *BTree) newNode() *bnode {
 	n.elements = make([]interface{}, 0, t.degree)
 	n.children = make([]*bnode, 0, t.degree+1)
 	return n
+}
+
+func (t *BTree) searchNode(n *bnode, v interface{}) (int, bool) {
+	exist := false
+	pos := sort.Search(len(n.elements), func(i int) bool {
+		c := t.Compare(n.elements[i], v)
+		if c == 0 {
+			exist = true
+		}
+		return c >= 0
+	})
+	return pos, exist
 }

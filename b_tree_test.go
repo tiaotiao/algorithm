@@ -1,6 +1,8 @@
 package algorithm
 
 import (
+	"fmt"
+	"github.com/tiaotiao/go/util"
 	"strings"
 	"testing"
 )
@@ -19,5 +21,17 @@ func TestBTree(t *testing.T) {
 		bt.Insert(v)
 		t.Log(bt.String())
 		//println(bt.String())
+	}
+
+	finds := []string{"C", "D", "P", "J", "N", "B"}
+
+	for _, v := range finds {
+		_, ok := bt.Find(v)
+
+		exists := (util.Find(insertions, v) >= 0)
+
+		if ok != exists {
+			t.Error(fmt.Sprintf("Find error: %v, should be %v", v, exists))
+		}
 	}
 }
