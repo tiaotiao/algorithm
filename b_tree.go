@@ -130,6 +130,30 @@ func (t *BTree) toString(n *bnode) (str string, r int) {
 	return fmt.Sprintf("%s", str), r + 1
 }
 
+func (t *BTree) Check() bool {
+	_, ok := t.check(t.root)
+	return ok
+}
+
+func (t *BTree) check(n *bnode) (int, bool) {
+	if n == nil {
+		return 0, true
+	}
+	height := -1
+	for _, ch := range n.children {
+		h, ok := t.check(ch)
+		if !ok {
+			return -1, false
+		}
+		if height == -1 {
+			height = h
+		} else if height != h {
+			return -1, false
+		}
+	}
+	return height + 1, true
+}
+
 func (t *BTree) newNode() *bnode {
 	n := new(bnode)
 	n.elements = make([]interface{}, 0, t.degree)

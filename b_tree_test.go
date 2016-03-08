@@ -20,7 +20,10 @@ func TestBTree(t *testing.T) {
 	for _, v := range insertions {
 		bt.Insert(v)
 		t.Log(bt.String())
-		//println(bt.String())
+
+		if !bt.Check() {
+			t.Errorf("Insert failed %v, %v", v, bt.String())
+		}
 	}
 
 	finds := []string{"C", "D", "P", "J", "N", "B"}
