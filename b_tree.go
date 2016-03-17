@@ -255,16 +255,18 @@ func (t *BTree) toString(n *bnode, depth int) (str string, r int) {
 	var s string
 	for i, c := range n.children {
 		s, r = t.toString(c, depth+1)
-		s = fmt.Sprintf("[%s]", s)
+		if s != "" {
+			s = fmt.Sprintf("[%s]", s)
+		}
 		// if r == 1 {
 		// 	s = fmt.Sprintf("%d:", depth+1) + s
 		// }
 		str += s
 		if i < len(n.elements) {
 			se := fmt.Sprintf("(%v)", n.elements[i])
-			if r > 0 {
-				se = fmt.Sprintf("%d:", depth) + se
-			}
+			// if r > 0 {
+			// 	se = fmt.Sprintf("%d:", depth) + se
+			// }
 			sp := strings.Repeat(" ", r)
 			se = sp + se + sp
 			str += se
@@ -273,28 +275,73 @@ func (t *BTree) toString(n *bnode, depth int) (str string, r int) {
 	return fmt.Sprintf("%s", str), r + 1
 }
 
-func (t *BTree) Check() bool {
-	_, ok := t.check(t.root)
-	return ok
+func (t *BTree) Check() error {
+	_, _, _, ok := t.check(t.root, 0)
+	if !ok {
+		return fmt.Errorf("invalid b-tree")
+	}
+	return nil
 }
 
-func (t *BTree) check(n *bnode) (int, bool) {
+func (t *BTree) check(n *bnode, depth int) (height int, min, max interface{}, ok bool) {
 	if n == nil {
-		return 0, true
+		return 0, nil, nil, true
 	}
-	height := -1
-	for _, ch := range n.children {
-		h, ok := t.check(ch)
-		if !ok {
-			return -1, false
+
+	if t.tooMany(n) {
+		return -1, nil, nil, false
+	}
+
+	if depth > 0 {
+		if t.tooFew(n) {
+			return -1, nil, nil, false
 		}
+	}
+
+	height = -1
+	min, max = nil, nil
+	for idx, ch := range n.children {
+		h, childmin, childmax, ok := t.check(ch, depth+1)
+		if !ok {
+			return -1, nil, nil, false
+		}
+
+		if childmin != nil {
+			if min == nil {
+				min = childmin
+			}
+			if max != nil {
+				if t.Compare(max, childmin) > 0 {
+					return -1, nil, nil, false
+				}
+			}
+		}
+		if childmax != nil {
+			max = childmax
+		}
+
+		if idx < len(n.elements) {
+			elem := n.elements[idx]
+			if min == nil {
+				min = elem
+			}
+
+			if max != nil {
+				if t.Compare(max, elem) > 0 {
+					return -1, nil, nil, false
+				}
+			}
+			max = elem
+		}
+
 		if height == -1 {
 			height = h
 		} else if height != h {
-			return -1, false
+			return -1, nil, nil, false
 		}
 	}
-	return height + 1, true
+
+	return height + 1, min, max, true
 }
 
 func (t *BTree) newNode() *bnode {

@@ -23,7 +23,7 @@ func TestBTree(t *testing.T) {
 		bt.Insert(v)
 		t.Log(fmt.Sprintf("Insert %v: %v", v, bt.String()))
 
-		if !bt.Check() {
+		if bt.Check() != nil {
 			t.Errorf("Insert failed %v, %v", v, bt.String())
 		}
 	}
@@ -51,6 +51,10 @@ func TestBTree(t *testing.T) {
 
 		if !ok {
 			t.Error(fmt.Sprintf("Delete error: %v, %v", v, bt.String()))
+		}
+
+		if bt.Check() != nil {
+			t.Errorf("Delete failed %v, %v", v, bt.String())
 		}
 	}
 }
