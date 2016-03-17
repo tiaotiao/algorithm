@@ -2,9 +2,10 @@ package algorithm
 
 import (
 	"fmt"
-	"github.com/tiaotiao/go/util"
 	"strings"
 	"testing"
+
+	"github.com/tiaotiao/go/util"
 )
 
 func TestBTree(t *testing.T) {
@@ -15,17 +16,19 @@ func TestBTree(t *testing.T) {
 		return strings.Compare(x, y)
 	}
 
+	// insert
 	insertions := []string{"C", "N", "G", "A", "H", "E", "K", "Q", "M", "F", "W", "L", "T", "Z", "D", "P", "R", "X", "Y", "S"}
 
 	for _, v := range insertions {
 		bt.Insert(v)
-		t.Log(bt.String())
+		t.Log(fmt.Sprintf("Insert %v: %v", v, bt.String()))
 
 		if !bt.Check() {
 			t.Errorf("Insert failed %v, %v", v, bt.String())
 		}
 	}
 
+	// find
 	finds := []string{"C", "D", "P", "J", "N", "B"}
 
 	for _, v := range finds {
@@ -35,6 +38,19 @@ func TestBTree(t *testing.T) {
 
 		if ok != exists {
 			t.Error(fmt.Sprintf("Find error: %v, should be %v", v, exists))
+		}
+	}
+
+	// delete
+	deletion := []string{"H", "T", "R", "E"}
+
+	for _, v := range deletion {
+		_, ok := bt.Delete(v)
+
+		t.Log(fmt.Sprintf("Delete %v: %v", v, bt.String()))
+
+		if !ok {
+			t.Error(fmt.Sprintf("Delete error: %v, %v", v, bt.String()))
 		}
 	}
 }
