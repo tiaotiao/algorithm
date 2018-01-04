@@ -14,10 +14,14 @@ func BinarySearch(a []int, val int) int {
 		if left == mid {
 			return mid
 		}
-		return BinarySearch(a[:mid+1], val) // find the left most one if duplicated
+		ret := BinarySearch(a[:mid], val) // find the left most one if duplicated
+		if ret != -1 {
+			return ret
+		}
+		return mid
 	} else if val < a[mid] {
 		return BinarySearch(a[:mid], val)
-	} else {
+	} else { // val > a[mid]
 		ret := BinarySearch(a[mid+1:], val)
 		if ret == -1 {
 			return -1

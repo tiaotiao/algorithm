@@ -7,6 +7,7 @@ func TestKMP(t *testing.T) {
 		s, p string
 		e    int
 	}{
+		{s: "hello", p: "elo", e: -1},
 		{s: "aaaabab", p: "cabd", e: -1},
 		{s: "aaab", p: "aaabaab", e: -1},
 		{s: "aaaabab", p: "aaba", e: 2},

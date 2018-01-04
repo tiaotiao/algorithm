@@ -1,29 +1,58 @@
 package algorithm
 
 import (
-    "testing"
-    "reflect"
+	"reflect"
+	"testing"
 )
 
 func TestNextPermutation(t *testing.T) {
-     var p []int = []int{1, 2, 4, 5, 5, 3}
-     var q []int = []int{1, 2, 5, 3, 4, 5}
-    
-    b := NextPermutation(p)
-    if !b {
-        t.Fatal("b == false")
-    }
-    
-    if !reflect.DeepEqual(p, q) {
-        t.Fatal(p, q)
-    }
-    
-    // a := []int{1, 2, 3, 4}
-    // for {
-    //     t.Logf("%v\n", a)
-    //     b := NextPermutation(a)
-    //     if !b {
-    //         break
-    //     }
-    // }
+
+	cases := []struct {
+		p  []int
+		q  []int
+		ok bool
+	}{
+		{
+			p:  []int{1, 2, 4, 5, 5, 3},
+			q:  []int{1, 2, 5, 3, 4, 5},
+			ok: true,
+		},
+		{
+			p:  []int{7, 5, 3, 2},
+			ok: false,
+		},
+		{
+			p:  []int{4, 8, 5, 6, 3, 1},
+			q:  []int{4, 8, 6, 1, 3, 5},
+			ok: true,
+		},
+		{
+			p:  []int{3, 6, 6},
+			q:  []int{6, 3, 6},
+			ok: true,
+		},
+		{
+			p:  []int{1, 2},
+			q:  []int{2, 1},
+			ok: true,
+		},
+		{
+			p:  []int{2},
+			ok: false,
+		},
+	}
+
+	for i, c := range cases {
+		b := NextPermutation(c.p)
+		if b != c.ok {
+			t.Errorf("%v: %v, b %v != %v", i, c.p, b, c.ok)
+			continue
+		}
+		if b == false {
+			continue
+		}
+		if !reflect.DeepEqual(c.p, c.q) {
+			t.Errorf("%v: %v, expect=%v", i, c.p, c.q)
+		}
+	}
 }
