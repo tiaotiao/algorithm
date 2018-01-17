@@ -7,7 +7,6 @@ struct Trie {
 struct Trie* trieNewNode() {
     struct Trie* t = (struct Trie*)malloc(sizeof(struct Trie));
     t->value = -1;
-    //t->child = (struct Trie**)malloc(256*sizeof(struct Trie*));
     memset((void*)t->child, 0, 256*sizeof(struct Trie*));
     return t;
 }
@@ -17,13 +16,8 @@ void TrieInsert(struct Trie* root, char* s, int value) {
     int i = 0;
     while (s[i] > 0) {
         if (p->child[s[i]] == NULL) {
-            break;
+            p->child[s[i]] = trieNewNode();
         }
-        p = p->child[s[i]];
-        i++;
-    }
-    while (s[i] > 0) {
-        p->child[s[i]] = trieNewNode();
         p = p->child[s[i]];
         i++;
     }
